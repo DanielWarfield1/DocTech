@@ -19,6 +19,7 @@ const handleAction = async action => {
 		if (data.pdf) await load(data.pdf);
 		if (data.next_page) await setPage(page + 1);
 		if (data.previous_page) await setPage(page - 1);
+		if (data.find_fig) await setPage(data.page);
 		if (data.snap_page) await setPage(data.page.snap_page);
 		if (data.scroll_up) await setScroll(-0.2);
 		if (data.scroll_down) await setScroll(0.2);
