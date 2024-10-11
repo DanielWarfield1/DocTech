@@ -3,7 +3,7 @@ const SpeechRecognition =
   // @ts-ignore
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
-export const recognition = new SpeechRecognition();
+const recognition = new SpeechRecognition();
 
 recognition.continuous = true;
 recognition.interimResults = true;
@@ -11,11 +11,11 @@ recognition.interimResults = true;
 let previousStartIndex = 0;
 let timeout = null;
 let startIndex = null;
-
+let started = false;
 
 export let words = [];
-export let timeoutLength = 1000;
-export let keyword = 'doc';
+export let timeoutLength = 2000;
+export let keyword = 'listen';
 export let callback = words => {};
 export const wordsAfterKeyword = () => startIndex ? words.slice(startIndex) : [];
 
@@ -49,3 +49,54 @@ recognition.onresult = ({ results }) => {
 	}
 };
 </script>
+
+<section>
+<p>{startIndex ? words.slice(startIndex - 1).join(' ') : ''}</p>
+<button class={started ? startIndex ? 'listening' : 'waiting' : 'stopped'} on:click={() => {
+  if (started) return
+  started = true;
+  recognition.start();
+}}>{started ? startIndex ? 'Listening...' : '"Hey DocTech, ..."' : 'Click to start listening'}</button>
+</section>
+
+<style>
+@keyframes pulsing {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.1);
+  }
+}
+
+section {
+display: grid;
+}
+
+button {
+  justify-self: center;
+  border-radius: 50%;
+  width: 20rem;
+  aspect-ratio: 1/1;
+  transition: background-color 0.1s;
+  box-shadow: 5px 5px 30px 1px rgba(121, 117, 147, 0.75);
+  position: relative;
+  border: none;
+}
+
+.listening {
+  background-color: #56949f;
+  animation: 1s cubic-bezier(0.07, -0.02, 1, 0.86) infinite alternate pulsing
+}
+
+.waiting {
+  background-color: #9893a5;
+}
+
+.stopped {
+  background-color: #b4637a;
+}
+
+</style>
+

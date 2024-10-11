@@ -2,11 +2,7 @@
 import { onMount } from "svelte";
 import PDF from "./PDF.svelte";
 import Recognition from "./Recognition.svelte";
-
-let recog = {};
-let action = [];
-let words = [];
-let error = null;
+import toast, { Toaster } from 'svelte-french-toast';
 
 let load = async uri => {};
 let setPage = async page => {};
@@ -15,25 +11,27 @@ let page = 0;
 
 const handleAction = async action => {
 	try {
-	error = null;
-	 const data = await (await fetch(`${import.meta.env.VITE_API_URL}?query=${encodeURIComponent(action)}&current_page=${page}`)).json();
-	 console.log(data);
-	 if (data.error) throw Error(data.error);
-	 // probably broken ?
-	 if (data.pdf) await load(data.pdf);
-	 if (data.next_page) await setPage(page + 1);
-	 if (data.previous_page) await setPage(page - 1);
-	 if (data.snap_page) await setPage(data.page.snap_page);
-	 if (data.scroll_up) await setScroll(-0.2);
-	 if (data.scroll_down) await setScroll(0.2);
+		const processingToast = toast('Processing...');
+		const data = await (await fetch(`${import.meta.env.VITE_API_URL}?query=${encodeURIComponent(action)}&current_page=${page}`)).json();
+		console.log(data);
+		if (data.error) throw Error(data.error);
+		// probably broken ?
+		if (data.pdf) await load(data.pdf);
+		if (data.next_page) await setPage(page + 1);
+		if (data.previous_page) await setPage(page - 1);
+		if (data.snap_page) await setPage(data.page.snap_page);
+		if (data.scroll_up) await setScroll(-0.2);
+		if (data.scroll_down) await setScroll(0.2);
+		toast.dismiss(processingToast);
+		toast.success('Done!');
 	} catch (err) {
-	error = err.toString();
+		toast.error(err.toString());
 	}
 };
 
 onMount(() => {
-	load('example.pdf').then(() => console.log('loaded'));
-	});
+		load('example.pdf').then(() => toast.success("Loaded PDF"));
+		});
 </script>
 
 <main>
@@ -42,19 +40,17 @@ onMount(() => {
 </div>
 
 <div class="recognition">
-<p>words: {words.join(' ')}</p>
-<p>action: {action.join(' ')}</p>
-<button on:click={() => recog?.start()}>start recording</button>
-
-<Recognition bind:words bind:recognition={recog} callback={handleAction}  />
+<Recognition
+	callback={handleAction}
+/>
 </div>
 
-<p>{error}</p>
+<Toaster />
 </main>
 
 <style>
 .pdf {
-	height: 50vh;
-	overflow: scroll;
+height: 70vh;
+overflow: scroll;
 }
 </style>
