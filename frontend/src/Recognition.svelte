@@ -14,8 +14,8 @@ let startIndex = null;
 
 
 export let words = [];
-export let timeoutLength = 2000;
-export let keyword = 'listen';
+export let timeoutLength = 1000;
+export let keyword = 'doc';
 export let callback = words => {};
 export const wordsAfterKeyword = () => startIndex ? words.slice(startIndex) : [];
 

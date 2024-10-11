@@ -1,20 +1,22 @@
 import docTech
 from flask import Flask, jsonify, request
-from dotenv import load_dotenv
 app = Flask(__name__)
-load_dotenv() 
+from flask_cors import CORS, cross_origin
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/")
 def hello():
   query = request.args.get('query')
   page = int(request.args.get('current_page'))
   try:
-    return jsonify(docTech.handle_query(query, {'current_page': page}))
+    result = docTech.handle_query(query, {'current_page': page})
+    if result['non_determ']:
+        raise Exception('could not determine action')
+    return jsonify(result)
   except Exception as e:
-    print('exception! (probably searched for a figure and there wasnt one)')
     print(e)
-    print('---------')
-    return None
+    return jsonify({ 'error': 'could not determine action!' })
 
 if __name__ == "__main__":
-  app.run()
+  app.run(host='0.0.0.0')

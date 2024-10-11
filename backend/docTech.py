@@ -3,7 +3,10 @@ from typing import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 # Setting up API keys
 groundx = Groundx(
