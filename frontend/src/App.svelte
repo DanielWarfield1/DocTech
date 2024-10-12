@@ -12,7 +12,7 @@ let page = 0;
 const handleAction = async action => {
 	try {
 		const processingToast = toast('Processing...');
-		const data = await (await fetch(`${import.meta.env.VITE_API_URL}?query=${encodeURIComponent(action)}&current_page=${page}`)).json();
+		const data = await (await fetch(`${import.meta.env.VITE_API_URL}/query?query=${encodeURIComponent(action)}&current_page=${page}`)).json();
 		console.log(data);
 		if (data.error) throw Error(data.error);
 		// probably broken ?
