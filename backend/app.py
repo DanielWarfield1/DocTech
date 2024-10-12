@@ -1,12 +1,14 @@
 import docTech
 from flask import Flask, jsonify, request
-app = Flask(__name__)
-from flask_cors import CORS, cross_origin
-cors = CORS(app)
+app = Flask(__name__, static_url_path="/", static_folder="../frontend/dist")
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/")
-def hello():
+def index():
+    return app.send_static_file(filename='index.html')
+
+@app.route("/query")
+def query():
   query = request.args.get('query')
   page = int(request.args.get('current_page'))
   try:
@@ -17,6 +19,8 @@ def hello():
   except Exception as e:
     print(e)
     return jsonify({ 'error': 'could not determine action!' })
+
+
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0')
